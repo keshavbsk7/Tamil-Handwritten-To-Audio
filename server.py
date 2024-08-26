@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import extract_words as extract
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -22,8 +23,11 @@ def extract_text():
         return jsonify({'error': str(e)})
 
 def extract_text_from_image(image_file):
-    extract.extract_words(image_file.filename)
+    image_path = f"temp_{image_file.filename}"
+    image_file.save(image_path)
+    extract.extract_words(image_path)
     extract.box_characters()
+    os.remove(image_path)
     return extract.predict_text_from_all_folders()
 
 if __name__ == '__main__':
